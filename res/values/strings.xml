@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Determinant Calcuation</string>
+    <string name="action_settings">Settings</string>
+    
+    <string name="tv_activity_main_order_text">please input the order:</string>
+	<string name="et_activity_main_order_hint">2~6</string>
+	<string name="btn_activity_main_confirm">confirm</string>
+	<string name="btn_activity_main_submit">submit</string>
+</resources>
