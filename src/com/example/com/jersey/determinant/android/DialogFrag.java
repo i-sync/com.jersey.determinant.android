@@ -16,8 +16,7 @@ public class DialogFrag extends DialogFragment {
 	private DialogFrag() {
 	}
 
-	public static DialogFrag getInstance() {
-		/*
+	public static DialogFrag getInstance() {		
 		if (instance == null) {
 			synchronized (DialogFrag.class) {
 				if (instance == null) {
@@ -25,9 +24,7 @@ public class DialogFrag extends DialogFragment {
 					instance.setCancelable(false);
 				}
 			}
-		}*/
-		instance = new DialogFrag();
-		instance.setCancelable(false);
+		}
 		return instance;
 	}
 

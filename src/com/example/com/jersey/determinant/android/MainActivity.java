@@ -17,7 +17,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
-import android.app.FragmentManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff.Mode;
 import android.os.Bundle;
@@ -25,15 +24,18 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.InputType;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -47,6 +49,7 @@ public class MainActivity extends Activity {
 	private Button btnSubmit;
 	private GridLayout glLayout;
 	private LinearLayout llLayout;
+	private TextView tvResult;
 	// private EditText etDynamic;
 	private int order;
 
@@ -55,13 +58,14 @@ public class MainActivity extends Activity {
 
 	private Handler handler = new Handler() {
 		public void handleMessage(android.os.Message msg) {
-			//dialog.dismiss();// hiden dialog
+			dialog.dismiss();// hiden dialog
 			if (msg.what == 1)// success
 			{
 				Determinant deter = (Determinant) msg.obj;
 				glLayout.removeAllViews();
 				createEditText(glLayout,deter.getArray());
-				Toast.makeText(getApplicationContext(), String.format("the determinant value is %.2f",deter.getValue()), Toast.LENGTH_LONG).show();
+				//Toast.makeText(getApplicationContext(), String.format("the determinant value is %.2f",deter.getValue()), Toast.LENGTH_LONG).show();
+				tvResult.setText(String.format("%s %.2f",getResources().getString(R.string.tv_activity_main_determinant),deter.getValue()));
 			} else {
 				Toast.makeText(getApplicationContext(), "calc error...",
 						Toast.LENGTH_LONG).show();
@@ -75,15 +79,30 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		// check network is connected
 		isConnected = NetworkManager.getInstance().isNetworkConnected(getApplicationContext());
-		
+		dialog= DialogFrag.getInstance();
 		etOrder = (EditText) this.findViewById(R.id.et_main_order);
 		btnConfirm = (Button) this.findViewById(R.id.btn_main_confirm);
 		btnSubmit = (Button) this.findViewById(R.id.btn_main_submit);
+		tvResult =(TextView)this.findViewById(R.id.tv_main_result);
 		glLayout = (GridLayout) this.findViewById(R.id.gl_layout_array);
 		llLayout = (LinearLayout) this.findViewById(R.id.ll_layout_submit);
 		// etDynamic
 		// =(EditText)this.findViewById(R.id.et_activity_main_dynamic);
 
+		
+		etOrder.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+			
+			@Override
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				// TODO Auto-generated method stub
+				if(actionId==EditorInfo.IME_ACTION_DONE)
+				{
+					btnConfirm.callOnClick();
+					return true;
+				}
+				return false;
+			}
+		});
 		/*
 		 * btnConfirm Click Event
 		 */
@@ -117,6 +136,7 @@ public class MainActivity extends Activity {
 				llLayout.setVisibility(View.VISIBLE);
 
 				createEditText(glLayout,null);
+				tvResult.setText(R.string.tv_activity_main_determinant);
 			}
 		});
 
@@ -159,7 +179,7 @@ public class MainActivity extends Activity {
 
 				// start query and show dialog
 				//dialog = DialogFrag.getInstance();
-				//dialog.show(getFragmentManager(), "dialog");
+				dialog.show(getFragmentManager(), "dialog");
 				
 				new Thread(new calcDeter(deter)).start();
 				
@@ -193,6 +213,7 @@ public class MainActivity extends Activity {
 				// et.setId(i);
 				et.setHintTextColor(Color.GRAY);
 				et.setHint("0");
+				et.setImeOptions(EditorInfo.IME_ACTION_NEXT);
 				if(array!=null)
 					et.setText(String.valueOf(array[i][j]));
 				layout.addView(et, params);
